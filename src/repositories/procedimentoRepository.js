@@ -1,9 +1,11 @@
-    // Adicionar em Procedimento
-    // searchByKeyword = async (keyword) => {
-    //     return await this.model.find({
-    //         $or: [
-    //             { title: { $regex: keyword, $options: "i" } },
-    //             { description: { $regex: keyword, $options: "i" } }
-    //         ]
-    //     })
-    // }
+import Procedimento from '../models/Procedimento.js';
+
+const procedimentoRepository = {
+  findAll: () => Procedimento.find(),
+  findById: (id) => Procedimento.findById(id),
+  create: (dados) => Procedimento.create(dados),
+  update: (id, dados) => Procedimento.findByIdAndUpdate(id, dados, { new: true }),
+  delete: (id) => Procedimento.findByIdAndDelete(id)
+};
+
+export default procedimentoRepository;

@@ -1,18 +1,16 @@
-import { BaseRepository } from "./baseRepository.js";
-import { profissional } from "../models/Profissional.js";
+import Profissional from '../models/Profissional.js';
 
-export class ProfissionalRepository extends BaseRepository {
-    constructor() {
-        super(profissional);
-    }
+const profissionalRepository = {
+  findAll: () => Profissional.find(),
+  findById: (id) => Profissional.findById(id),
+  create: (dados) => Profissional.create(dados),
+  update: (id, dados) => Profissional.findByIdAndUpdate(id, dados, { new: true }),
+  delete: (id) => Profissional.findByIdAndDelete(id),
+  
+  // Método customizado mantido, mas adaptado ao novo formato
+  searchByName: (nome) => Profissional.find({
+    nome: { $regex: nome, $options: "i" }
+  })
+};
 
-    async searchByName(name) {
-        return await this.model.find({
-            name: { $regex: name, $options: "i" },
-        });
-    }
-}
-
-
-
-
+export default profissionalRepository;

@@ -1,22 +1,38 @@
-import mongoose from "mongoose";
-import { profissionalSchema } from "./Profissional.js";
+import mongoose from 'mongoose';
 
 const agendamentoSchema = new mongoose.Schema({
-    // paciente: pacienteSchema,
-    profissional: profissionalSchema,
-    // procedimento: procedimentoSchema,
-    dataHora:{
-        type: Date,
-        required: [true, "Data e hora do agendamento é obrigatório"]
-    },
-    status: { type: String },
-},
-    {
-        versionKey: false,
-        timestamps: true,
-    }
-);
+  // Adicionado campo 'paciente' como string simples por enquanto
+  paciente: {
+    nome: { type: String, required: true },
+    telefone: { type: String }
+  },
+  
+  // Referência correta para os outros modelos
+  profissional: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Profissional', // Nome do modelo referenciado
+    required: true
+  },
+  
+  procedimento: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Procedimento', // Nome do modelo referenciado
+    required: true
+  },
 
+  dataHora: {
+    type: Date,
+    required: true
+  },
+  
+  status: {
+    type: String,
+    required: true,
+    enum: ['Agendado', 'Confirmado', 'Cancelado', 'Realizado'],
+    default: 'Agendado'
+  }
+});
 
-const agendamento = mongoose.model("agendamento", agendamentoSchema);
-export default agendamento;
+const Agendamento = mongoose.model('Agendamento', agendamentoSchema);
+
+export default Agendamento;

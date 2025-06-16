@@ -1,110 +1,47 @@
-import { ProfissionalService } from "../services/profissionalService.js";
-import { ProfissionalDto } from "../dtos/profissionalDto.js";
-import { profissional } from "../models/Profissional.js";
+// Em src/controllers/profissionalController.js
 
-class ProfissionalController {
-    constructor() {
-        this.profissionalService = new ProfissionalService();
-    }
+import service from '../services/profissionalService.js';
 
-    createProfissional = async (req, res) => {
-        try {
-            const newProfissional = await this.profissionalService.createProfissional(req.body);
-            res.status(201).json({
-                message: "Profissional criado com sucesso!",
-                profissional: new ProfissionalDto(newProfissional),
-            })
-        } catch (error) {
-            res.status(500).send(error.message);
-        }
-    }
+const profissionalController = {
+  listar: async (req, res) => {
+    // Nome correto: service.listar
+    const profissionais = await service.listar();
+    res.json(profissionais);
+  },
 
-    getAllProfissionais = async (req, res) => {
-        try {
-            const listProfissionais = await this.profissionalService.getAllProfissionais();
-            res.status(200).json(listProfissionais.map((profissional) => new ProfissionalDto(profissional)));
-        } catch (error) {
-            res.status(500).send(error.message);
-        }
-    }
+  buscarPorId: async (req, res) => {
+    // Nome correto: service.buscarPorId
+    const profissional = await service.buscarPorId(req.params.id);
+    if (!profissional) return res.status(404).send('Profissional não encontrado');
+    res.json(profissional);
+  },
 
-    getProfissionalById = async (req, res) => {
-        try {
-            const profissionalById = await this.profissionalService.getProfissionalById(req.params.id);
-            if (!profissionalById) {
-                return res.status(404).send("Profissional não encontrado!");
-            }
-            res.status(200).json(new ProfissionalDto(profissionalById));
-        } catch (error) {
-            res.status(500).send(error.message);
-        }
-    }
+  criar: async (req, res) => {
+    // CORREÇÃO AQUI 👇: Mude de service.createProfissional para service.criar
+    const novo = await service.criar(req.body);
+    res.status(201).json(novo);
+  },
 
-    getProfissionalById = async(req, res) =>{
-        try {
-            const profissional = await this.profissionalService.findById(req.params.id);
-            if (!profissional) {
-                return res.status(404).send("Profissional não encontrado!");
-            }
-            res.status(200).json(new ProfissionalDto(profissional));
-        } catch (error) {
-            res.status(500).send(error.message);
-        }
-    }
+  atualizar: async (req, res) => {
+    // Nome correto: service.atualizar
+    const atualizado = await service.atualizar(req.params.id, req.body);
+    if (!atualizado) return res.status(404).send('Profissional não encontrado');
+    res.json(atualizado);
+  },
 
-    updateProfissional = async(req, res) => {
-        try {
-            const updatedProfissional = await this.profissionalService.updateProfissional(
-                req.params.id,
-                req.body, {new: true});
-            if (!updatedProfissional) {
-                return res.status(404).send("Profissional não encontrado!");
-            }
-            res.status(201).json({
-                message: "Profissional atualizado com sucesso!",
-                profissional: new ProfissionalDto(updatedProfissional),
-            });
-        } catch (error) {
-            res.status(500).send(error.message);
-        }
-    }
+  remover: async (req, res) => {
+    // Nome correto: service.remover
+    const removido = await service.remover(req.params.id);
+    if (!removido) return res.status(404).send('Profissional não encontrado');
+    res.status(204).send();
+  },
+  
+  buscarPorNome: async (req, res) => {
+    // Nome correto: service.buscarPorNome
+    const { nome } = req.query; 
+    const profissionais = await service.buscarPorNome(nome);
+    res.json(profissionais);
+  }
+};
 
-    deleteProfissional = async(req, res) => {
-        try {
-            deletedProfissional = await this.profissionalService.deleteProfissional(req.params.id);
-            if (!deletedProfissional) {
-                return res.status(404).json({
-                    message: "Profissional não encontrado!"
-                });
-            }
-            res.status(200).json({
-                message: "Profissional removido com sucesso!"
-            });
-        } catch (error) {
-            res.status(500).send(error.message);
-        }
-    }
-
-    searchProfissionalByName = async(req, res) => {
-        try {
-            const{name} = req.params;
-            const profissionais = await this.profissionalService.searchProfissionalByName(name);
-
-            if(profissionais.length === 0){
-                return res.status(404).json({
-                    message: "Nenhum profissional encontrado com o nome informado.",
-                    name: name,
-                })
-            }
-
-            res.status(200).json(profissionais.map((profissional) => new ProfissionalDto(profissional)));
-            
-        } catch (error) {
-            res.status(500).send(error.message);
-            
-        }
-    }
-
-}
-
-export default new ProfissionalController();
+export default profissionalController;

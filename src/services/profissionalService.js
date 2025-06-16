@@ -1,48 +1,48 @@
-import { ProfissionalRepository } from "../repositories/profissionalRepository.js";
-import { ProfissionalDto } from "../dtos/profissionalDto.js";
+import repo from '../repositories/profissionalRepository.js';
+// Importamos tanto o DTO padrão quanto o de requisição que criamos antes
+import profissionalDto, { profissionalParaRequisicaoDto } from '../dtos/profissionalDto.js';
 
-export class ProfissionalService {
-    constructor() {
-        this.profissionalRepository = new ProfissionalRepository();
-    }
-    
-    createProfissional = async (profissionalData) => {
-        const profissional = ProfissionalDto.fromRequest(profissionalData);
-        return await this.profissionalRepository.create(profissional);
-    }
+const profissionalService = {
+  // Renomeado de getAllProfissionais para listar
+  listar: async () => {
+    const profissionais = await repo.findAll();
+    // Mapeia cada profissional para o formato do DTO
+    return profissionais.map(profissionalDto);
+  },
 
-    getAllProfissionais = async () => {
-        return await this.profissionalRepository.findAll();
-    }
+  // Renomeado de getProfissionalById para buscarPorId
+  buscarPorId: async (id) => {
+    const profissional = await repo.findById(id);
+    // Se o profissional for encontrado, formata com DTO; senão, retorna null
+    return profissional ? profissionalDto(profissional) : null;
+  },
 
-    getProfissionalById = async (id) => {
-        const foundProfissional = await this.profissionalRepository.findById(id);
-        if (!foundProfissional) {
-            throw new Error("Profissional não encontrado!");
-        }
-        return foundProfissional;
-    }
+  // Renomeado de searchProfissionalByName para buscarPorNome
+  buscarPorNome: async (nome) => {
+    const profissionais = await repo.searchByName(nome);
+    return profissionais.map(profissionalDto);
+  },
 
-    updateProfissional = async (id, profissionalData) => {
-        const updatedProfissional = await this.profissionalRepository.update(id, profissionalData);
-        if (!updatedProfissional) {
-            throw new Error("Profissional não encontrado!");
-        }
-        return updatedProfissional;
-    }
+  // Renomeado de createProfissional para criar
+  criar: async (dados) => {
+    // Usa o DTO de requisição para filtrar os dados antes de enviar ao repositório
+    const dadosFiltrados = profissionalParaRequisicaoDto(dados);
+    const novoProfissional = await repo.create(dadosFiltrados);
+    return profissionalDto(novoProfissional);
+  },
 
-    deleteProfissional = async (id) => {
-        const deleteProfissional = await this.profissionalRepository.delete(id);
-        if (!deleteProfissional) {
-            throw new Error("Profissional não encontrado!");
-        }
-        return deleteProfissional;
-    }
+  // Renomeado de updateProfissional para atualizar
+  atualizar: async (id, dados) => {
+    const dadosFiltrados = profissionalParaRequisicaoDto(dados);
+    const profissionalAtualizado = await repo.update(id, dadosFiltrados);
+    return profissionalAtualizado ? profissionalDto(profissionalAtualizado) : null;
+  },
 
-    searchProfissionalByName = async (name) => {
-        if (!name || name.trim() === "") {
-            throw new Error("Informar o nome da profissional para busca.");
-        }
-        return await this.profissionalRepository.searchByName(name);
-    }
-}
+  // Renomeado de deleteProfissional para remover
+  remover: async (id) => {
+    // Apenas repassa a chamada para o repositório, como no exemplo
+    return await repo.delete(id);
+  }
+};
+
+export default profissionalService;

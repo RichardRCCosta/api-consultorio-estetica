@@ -1,9 +1,16 @@
-import { BaseRepository } from "./baseRepository.js";
-import agendamento from "../models/Agendamento.js";
+import Agendamento from '../models/Agendamento.js';
 
-export class AgendamentoRepository extends BaseRepository {
-    constructor() {
-        super(agendamento)
-    }
+const agendamentoRepository = {
+  // O .populate() busca os dados dos modelos referenciados
+  findAll: () => Agendamento.find().populate('profissional').populate('procedimento'),
+  
+  findById: (id) => Agendamento.findById(id).populate('profissional').populate('procedimento'),
+  
+  create: (dados) => Agendamento.create(dados),
+  
+  update: (id, dados) => Agendamento.findByIdAndUpdate(id, dados, { new: true }),
+  
+  delete: (id) => Agendamento.findByIdAndDelete(id)
+};
 
-}
+export default agendamentoRepository;

@@ -1,63 +1,43 @@
-import { AgendamentoRepository } from "../repositories/agendamentoRepository.js";
-import { ProfissionalRepository } from "../repositories/profissionalRepository.js";
-// Procedimento Repository
-// Paciente Repository
-import { AgendamentoDto } from "../dtos/agendamentoDto.js";
+import repo from '../repositories/agendamentoRepository.js';
+import agendamentoDto, { agendamentoParaRequisicaoDto } from '../dtos/agendamentoDto.js';
+// Vamos precisar dos outros repositórios para validar os IDs
+import profissionalRepo from '../repositories/profissionalRepository.js';
+import procedimentoRepo from '../repositories/procedimentoRepository.js';
 
-export class AgendamentoService {
-    agendamentoRepository = new AgendamentoRepository();
-    profissionalRepository = new ProfissionalRepository();
+const agendamentoService = {
+  listar: async () => {
+    const agendamentos = await repo.findAll();
+    return agendamentos.map(agendamentoDto);
+  },
 
-    getAllAgendamentos = async () => {
-        return await this.agendamentoRepository.findAll();
-    }
+  buscarPorId: async (id) => {
+    const agendamento = await repo.findById(id);
+    return agendamentoDto(agendamento);
+  },
 
-    createAgendamento = async (agendamentoData) => {
-        const foundProfissional = await this.profissionalRepository.findById(agendamentoData.profissional);
+  criar: async (dados) => {
+    const dadosFiltrados = agendamentoParaRequisicaoDto(dados);
 
-        if (!foundProfissional) {
-            throw new Error("Profissional informado não existe.");
-        }
+    // Validação: checa se os IDs existem antes de criar
+    const profissionalExiste = await profissionalRepo.findById(dadosFiltrados.profissional);
+    if (!profissionalExiste) throw new Error('Profissional não encontrado.');
 
-        const completeAgendamento = {
-            ...AgendamentoDto.fromRequest(agendamentoData),
-            profissional: { ...foundProfissional._doc },
-        }
+    const procedimentoExiste = await procedimentoRepo.findById(dadosFiltrados.procedimento);
+    if (!procedimentoExiste) throw new Error('Procedimento não encontrado.');
 
-        return await this.agendamentoRepository.create(completeAgendamento);
-    }
+    const novoAgendamento = await repo.create(dadosFiltrados);
+    return agendamentoDto(await repo.findById(novoAgendamento._id)); // Busca novamente para popular
+  },
 
-    getAgendamentoById = async (id) => {
-        const agendamento = await this.agendamentoRepository.findById(id);
-        if (!agendamento) {
-            throw new Error("Agendamento não encontrado");
-        }
-        return agendamento;
-    }
+  atualizar: async (id, dados) => {
+    const dadosFiltrados = agendamentoParaRequisicaoDto(dados);
+    const agendamentoAtualizado = await repo.update(id, dadosFiltrados);
+    return agendamentoDto(agendamentoAtualizado);
+  },
 
-    updateAgendamento = async (id, agendamentoData) => {
-        let updateData = { ...agendamentoData };
-        if (agendamentoData.profissional) {
-            const foundProfissional = await this.profissionalRepository.findById(agendamentoData.profissional);
-            if (!foundProfissional) {
-                throw new Error("Profissional não encontrado!");
-            }
-            updateData.profissional = { ...foundProfissional._doc };
-        }
+  remover: async (id) => {
+    return await repo.delete(id);
+  }
+};
 
-        const updatedAgendamento = await this.agendamentoRepository.update(id, updateData);
-        if (!updatedAgendamento) {
-            throw new Error("Agendamento não encontrado");
-        }
-        return updatedAgendamento;
-    }
-
-    deleteAgendamento = async (id) => {
-        const deleteAgendamento = await this.agendamentoRepository.delete(id);
-        if (!deleteAgendamento) {
-            throw new Error("Agendamento não encontrado");
-        }
-        return deleteAgendamento;
-    }
-
-}
+export default agendamentoService;
