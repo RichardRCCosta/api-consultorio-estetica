@@ -1,6 +1,7 @@
 import express from "express";
 import connectToDatabase from "./config/dbConnect.js";
 import routes from "./routes/index.js";
+import { swaggerUi, swaggerSpec } from "./config/swagger.js"; // 🚨 adicione isso
 
 const connection = await connectToDatabase();
 
@@ -13,7 +14,14 @@ connection.once("open", () => {
 });
 
 const app = express();
+
+// Middleware para JSON
+app.use(express.json());
+
+// Rota para documentação Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // 🚨 adicione isso
+
+
 routes(app);
 
 export default app;
-

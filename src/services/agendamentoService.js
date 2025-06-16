@@ -1,6 +1,5 @@
 import repo from '../repositories/agendamentoRepository.js';
 import agendamentoDto, { agendamentoParaRequisicaoDto } from '../dtos/agendamentoDto.js';
-// Vamos precisar dos outros repositórios para validar os IDs
 import profissionalRepo from '../repositories/profissionalRepository.js';
 import procedimentoRepo from '../repositories/procedimentoRepository.js';
 

@@ -9,7 +9,7 @@ const routes = (app) => {
 
   app.use(express.json());
 
-  // ✅ Montar os módulos com prefixos:
+  // Montar os módulos com prefixos:
   app.use('/pacientes', pacientes);
   app.use('/procedimentos', procedimentos);
   app.use('/agendamentos', agendamento);

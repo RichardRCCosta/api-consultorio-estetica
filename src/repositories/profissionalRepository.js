@@ -7,7 +7,7 @@ const profissionalRepository = {
   update: (id, dados) => Profissional.findByIdAndUpdate(id, dados, { new: true }),
   delete: (id) => Profissional.findByIdAndDelete(id),
   
-  // Método customizado mantido, mas adaptado ao novo formato
+  
   searchByName: (nome) => Profissional.find({
     nome: { $regex: nome, $options: "i" }
   })

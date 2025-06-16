@@ -7,16 +7,16 @@ const agendamentoSchema = new mongoose.Schema({
     telefone: { type: String }
   },
   
-  // Referência correta para os outros modelos
+  
   profissional: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Profissional', // Nome do modelo referenciado
+    ref: 'Profissional', 
     required: true
   },
   
   procedimento: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Procedimento', // Nome do modelo referenciado
+    ref: 'Procedimento', 
     required: true
   },
 
