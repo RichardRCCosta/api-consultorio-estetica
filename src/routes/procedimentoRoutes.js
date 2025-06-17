@@ -1,5 +1,6 @@
 import express from 'express';
 import controller from '../controllers/procedimentoController.js';
+import verifyJWT from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -11,35 +12,30 @@ const router = express.Router();
  *       type: object
  *       required:
  *         - nome
- *         - descricao
  *         - preco
- *         - duracao
  *       properties:
  *         id:
  *           type: string
- *           description: ID do procedimento
+ *           description: O ID gerado automaticamente do procedimento.
  *         nome:
  *           type: string
+ *           description: O nome do procedimento.
  *         descricao:
  *           type: string
+ *           description: A descrição detalhada do procedimento.
  *         preco:
  *           type: number
+ *           format: float
+ *           description: O preço do procedimento.
  *         duracao:
- *           type: number
- *       example:
- *         id: "123"
- *         nome: "Limpeza de Pele"
- *         descricao: "Procedimento para limpeza profunda da pele"
- *         preco: 150.00
- *         duracao: 60
- *
+ *           type: integer
+ *           description: A duração do procedimento em minutos.
+ * 
  *     ProcedimentoInput:
  *       type: object
  *       required:
  *         - nome
- *         - descricao
  *         - preco
- *         - duracao
  *       properties:
  *         nome:
  *           type: string
@@ -47,20 +43,9 @@ const router = express.Router();
  *           type: string
  *         preco:
  *           type: number
+ *           format: float
  *         duracao:
- *           type: number
- *       example:
- *         nome: "Limpeza de Pele"
- *         descricao: "Procedimento para limpeza profunda da pele"
- *         preco: 150.00
- *         duracao: 60
- */
-
-/**
- * @swagger
- * tags:
- *   name: Procedimentos
- *   description: Gerenciamento de procedimentos estéticos
+ *           type: integer
  */
 
 /**
@@ -69,8 +54,10 @@ const router = express.Router();
  *   get:
  *     summary: Retorna a lista de todos os procedimentos
  *     tags: [Procedimentos]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
- *       200:
+ *       '200':
  *         description: Lista de procedimentos
  *         content:
  *           application/json:
@@ -79,7 +66,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Procedimento'
  */
-router.get('/', controller.listar);
+router.get('/', verifyJWT, controller.listar);
 
 /**
  * @swagger
@@ -87,24 +74,26 @@ router.get('/', controller.listar);
  *   get:
  *     summary: Busca um procedimento pelo ID
  *     tags: [Procedimentos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: ID do procedimento
+ *         description: O ID do procedimento
  *     responses:
- *       200:
- *         description: Procedimento encontrado
+ *       '200':
+ *         description: Dados do procedimento
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Procedimento'
- *       404:
+ *       '404':
  *         description: Procedimento não encontrado
  */
-router.get('/:id', controller.buscarPorId);
+router.get('/:id', verifyJWT, controller.buscarPorId);
 
 /**
  * @swagger
@@ -112,6 +101,8 @@ router.get('/:id', controller.buscarPorId);
  *   post:
  *     summary: Cria um novo procedimento
  *     tags: [Procedimentos]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -119,14 +110,16 @@ router.get('/:id', controller.buscarPorId);
  *           schema:
  *             $ref: '#/components/schemas/ProcedimentoInput'
  *     responses:
- *       201:
+ *       '201':
  *         description: Procedimento criado com sucesso
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Procedimento'
+ *       '400':
+ *         description: Erro na requisição
  */
-router.post('/', controller.criar);
+router.post('/', verifyJWT, controller.criar);
 
 /**
  * @swagger
@@ -134,13 +127,15 @@ router.post('/', controller.criar);
  *   put:
  *     summary: Atualiza um procedimento existente
  *     tags: [Procedimentos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: ID do procedimento
+ *         description: O ID do procedimento
  *     requestBody:
  *       required: true
  *       content:
@@ -148,16 +143,16 @@ router.post('/', controller.criar);
  *           schema:
  *             $ref: '#/components/schemas/ProcedimentoInput'
  *     responses:
- *       200:
+ *       '200':
  *         description: Procedimento atualizado com sucesso
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Procedimento'
- *       404:
+ *       '404':
  *         description: Procedimento não encontrado
  */
-router.put('/:id', controller.atualizar);
+router.put('/:id', verifyJWT, controller.atualizar);
 
 /**
  * @swagger
@@ -165,19 +160,21 @@ router.put('/:id', controller.atualizar);
  *   delete:
  *     summary: Remove um procedimento
  *     tags: [Procedimentos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: ID do procedimento
+ *         description: O ID do procedimento
  *     responses:
- *       204:
+ *       '204':
  *         description: Procedimento removido com sucesso
- *       404:
+ *       '404':
  *         description: Procedimento não encontrado
  */
-router.delete('/:id', controller.remover);
+router.delete('/:id', verifyJWT, controller.remover);
 
 export default router;

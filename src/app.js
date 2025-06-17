@@ -1,7 +1,7 @@
 import express from "express";
 import connectToDatabase from "./config/dbConnect.js";
 import routes from "./routes/index.js";
-import { swaggerUi, swaggerSpec } from "./config/swagger.js"; // 🚨 adicione isso
+import { swaggerUi, swaggerSpec } from "./config/swagger.js";
 
 const connection = await connectToDatabase();
 
@@ -19,9 +19,9 @@ const app = express();
 app.use(express.json());
 
 // Rota para documentação Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // 🚨 adicione isso
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); 
 
-
+// Suas rotas
 routes(app);
 
 export default app;

@@ -7,10 +7,12 @@ const profissionalRepository = {
   update: (id, dados) => Profissional.findByIdAndUpdate(id, dados, { new: true }),
   delete: (id) => Profissional.findByIdAndDelete(id),
   
-  
   searchByName: (nome) => Profissional.find({
     nome: { $regex: nome, $options: "i" }
-  })
+  }),
+
+  
+  searchByEmail: (email) => Profissional.findOne({ email: email })
 };
 
 export default profissionalRepository;

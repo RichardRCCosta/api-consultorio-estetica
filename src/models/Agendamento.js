@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 
 const agendamentoSchema = new mongoose.Schema({
-  // Adicionado campo 'paciente' como string simples por enquanto
+  
   paciente: {
     nome: { type: String, required: true },
     telefone: { type: String }
   },
   
-  
+  // Referência correta para os outros modelos
   profissional: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Profissional', 

@@ -14,11 +14,28 @@ const swaggerDefinition = {
       url: 'http://localhost:3000',
     },
   ],
+  
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Insira o token JWT no formato: Bearer {token}'
+      }
+    }
+  },
+  
+  security: [
+    {
+      bearerAuth: []
+    }
+  ],
 };
 
 const options = {
   swaggerDefinition,
-  apis: ['./src/routes/*.js'], // Caminho para as rotas
+  apis: ['./src/routes/*.js'], // Caminho onde estão as suas rotas
 };
 
 const swaggerSpec = swaggerJSDoc(options);

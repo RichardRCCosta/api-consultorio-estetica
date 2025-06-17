@@ -1,5 +1,6 @@
 import express from 'express';
 import controller from '../controllers/profissionalController.js';
+import verifyJWT from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -26,12 +27,7 @@ const router = express.Router();
  *         telefone:
  *           type: string
  *           description: O telefone de contato do profissional.
- *       example:
- *         id: "60d0fe4f5311236168a109cb"
- *         nome: "Dr. Carlos Silva"
- *         email: "carlos.silva@example.com"
- *         telefone: "11912345678"
- *
+ * 
  *     ProfissionalInput:
  *       type: object
  *       required:
@@ -45,17 +41,6 @@ const router = express.Router();
  *           type: string
  *         telefone:
  *           type: string
- *       example:
- *         nome: "Dr. Carlos Silva"
- *         email: "carlos.silva@example.com"
- *         telefone: "11912345678"
- */
-
-/**
- * @swagger
- * tags:
- *   name: Profissionais
- *   description: API para gerenciamento de profissionais
  */
 
 /**
@@ -64,8 +49,10 @@ const router = express.Router();
  *   get:
  *     summary: Retorna a lista de todos os profissionais
  *     tags: [Profissionais]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
- *       200:
+ *       '200':
  *         description: Lista de profissionais
  *         content:
  *           application/json:
@@ -74,7 +61,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Profissional'
  */
-router.get('/', controller.listar);
+router.get('/', verifyJWT, controller.listar);
 
 /**
  * @swagger
@@ -82,6 +69,8 @@ router.get('/', controller.listar);
  *   get:
  *     summary: Busca um profissional pelo ID
  *     tags: [Profissionais]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -90,16 +79,16 @@ router.get('/', controller.listar);
  *         required: true
  *         description: O ID do profissional
  *     responses:
- *       200:
+ *       '200':
  *         description: Dados do profissional
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Profissional'
- *       404:
+ *       '404':
  *         description: Profissional não encontrado
  */
-router.get('/:id', controller.buscarPorId);
+router.get('/:id', verifyJWT, controller.buscarPorId);
 
 /**
  * @swagger
@@ -107,6 +96,8 @@ router.get('/:id', controller.buscarPorId);
  *   post:
  *     summary: Cria um novo profissional
  *     tags: [Profissionais]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -114,16 +105,16 @@ router.get('/:id', controller.buscarPorId);
  *           schema:
  *             $ref: '#/components/schemas/ProfissionalInput'
  *     responses:
- *       201:
+ *       '201':
  *         description: Profissional criado com sucesso
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Profissional'
- *       400:
+ *       '400':
  *         description: Erro na requisição
  */
-router.post('/', controller.criar);
+router.post('/', verifyJWT, controller.criar);
 
 /**
  * @swagger
@@ -131,6 +122,8 @@ router.post('/', controller.criar);
  *   put:
  *     summary: Atualiza um profissional existente
  *     tags: [Profissionais]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -145,16 +138,16 @@ router.post('/', controller.criar);
  *           schema:
  *             $ref: '#/components/schemas/ProfissionalInput'
  *     responses:
- *       200:
+ *       '200':
  *         description: Profissional atualizado com sucesso
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Profissional'
- *       404:
+ *       '404':
  *         description: Profissional não encontrado
  */
-router.put('/:id', controller.atualizar);
+router.put('/:id', verifyJWT, controller.atualizar);
 
 /**
  * @swagger
@@ -162,6 +155,8 @@ router.put('/:id', controller.atualizar);
  *   delete:
  *     summary: Remove um profissional
  *     tags: [Profissionais]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -170,11 +165,11 @@ router.put('/:id', controller.atualizar);
  *         required: true
  *         description: O ID do profissional
  *     responses:
- *       204:
+ *       '204':
  *         description: Profissional removido com sucesso
- *       404:
+ *       '404':
  *         description: Profissional não encontrado
  */
-router.delete('/:id', controller.remover);
+router.delete('/:id', verifyJWT, controller.remover);
 
 export default router;

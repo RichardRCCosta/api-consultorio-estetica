@@ -1,5 +1,6 @@
 import express from 'express';
 import controller from '../controllers/agendamentoController.js';
+import verifyJWT from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ const router = express.Router();
  *       properties:
  *         id:
  *           type: string
+ *           description: O ID gerado automaticamente do agendamento.
  *         paciente:
  *           type: object
  *           properties:
@@ -20,24 +22,18 @@ const router = express.Router();
  *             telefone:
  *               type: string
  *         profissional:
- *           type: string
+ *           $ref: '#/components/schemas/Profissional'
  *         procedimento:
- *           type: string
+ *           $ref: '#/components/schemas/Procedimento'
  *         dataHora:
  *           type: string
  *           format: date-time
+ *           description: Data e hora do agendamento.
  *         status:
  *           type: string
- *       example:
- *         id: "abc123"
- *         paciente:
- *           nome: "Richard"
- *           telefone: "41984811706"
- *         profissional: "684f64b1aeaecf733f799eea"
- *         procedimento: "684f646aaeaecf733f799ee8"
- *         dataHora: "2025-08-20T14:30:00.000Z"
- *         status: "Agendado"
- *
+ *           description: O status do agendamento.
+ *           enum: [Agendado, Confirmado, Cancelado, Realizado]
+ * 
  *     AgendamentoInput:
  *       type: object
  *       required:
@@ -45,7 +41,6 @@ const router = express.Router();
  *         - profissional
  *         - procedimento
  *         - dataHora
- *         - status
  *       properties:
  *         paciente:
  *           type: object
@@ -56,28 +51,17 @@ const router = express.Router();
  *               type: string
  *         profissional:
  *           type: string
+ *           description: O ID do profissional.
  *         procedimento:
  *           type: string
+ *           description: O ID do procedimento.
  *         dataHora:
  *           type: string
  *           format: date-time
  *         status:
  *           type: string
- *       example:
- *         paciente:
- *           nome: "Richard"
- *           telefone: "41984811706"
- *         profissional: "684f64b1aeaecf733f799eea"
- *         procedimento: "684f646aaeaecf733f799ee8"
- *         dataHora: "2025-08-20T14:30:00.000Z"
- *         status: "Agendado"
- */
-
-/**
- * @swagger
- * tags:
- *   name: Agendamentos
- *   description: Gerenciamento de agendamentos de procedimentos
+ *           enum: [Agendado, Confirmado, Cancelado, Realizado]
+ *           default: Agendado
  */
 
 /**
@@ -86,9 +70,11 @@ const router = express.Router();
  *   get:
  *     summary: Retorna a lista de todos os agendamentos
  *     tags: [Agendamentos]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
- *       200:
- *         description: Lista de agendamentos
+ *       '200':
+ *         description: Lista de agendamentos com dados populados.
  *         content:
  *           application/json:
  *             schema:
@@ -96,32 +82,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Agendamento'
  */
-router.get('/', controller.listar);
-
-/**
- * @swagger
- * /agendamentos/{id}:
- *   get:
- *     summary: Busca um agendamento pelo ID
- *     tags: [Agendamentos]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID do agendamento
- *     responses:
- *       200:
- *         description: Agendamento encontrado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Agendamento'
- *       404:
- *         description: Agendamento não encontrado
- */
-router.get('/:id', controller.buscarPorId);
+router.get('/', verifyJWT, controller.listar);
 
 /**
  * @swagger
@@ -129,6 +90,8 @@ router.get('/:id', controller.buscarPorId);
  *   post:
  *     summary: Cria um novo agendamento
  *     tags: [Agendamentos]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -136,28 +99,59 @@ router.get('/:id', controller.buscarPorId);
  *           schema:
  *             $ref: '#/components/schemas/AgendamentoInput'
  *     responses:
- *       201:
+ *       '201':
  *         description: Agendamento criado com sucesso
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Agendamento'
+ *       '400':
+ *         description: "Erro na requisição (ex: Profissional ou Procedimento não encontrado)"
  */
-router.post('/', controller.criar);
+router.post('/', verifyJWT, controller.criar);
+
+/**
+ * @swagger
+ * /agendamentos/{id}:
+ *   get:
+ *     summary: Busca um agendamento pelo ID
+ *     tags: [Agendamentos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: O ID do agendamento
+ *     responses:
+ *       '200':
+ *         description: Dados do agendamento
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Agendamento'
+ *       '404':
+ *         description: Agendamento não encontrado
+ */
+router.get('/:id', verifyJWT, controller.buscarPorId);
 
 /**
  * @swagger
  * /agendamentos/{id}:
  *   put:
- *     summary: Atualiza um agendamento
+ *     summary: Atualiza um agendamento existente
  *     tags: [Agendamentos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         schema:
  *           type: string
- *         description: ID do agendamento
+ *         required: true
+ *         description: O ID do agendamento
  *     requestBody:
  *       required: true
  *       content:
@@ -165,16 +159,16 @@ router.post('/', controller.criar);
  *           schema:
  *             $ref: '#/components/schemas/AgendamentoInput'
  *     responses:
- *       200:
+ *       '200':
  *         description: Agendamento atualizado com sucesso
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Agendamento'
- *       404:
+ *       '404':
  *         description: Agendamento não encontrado
  */
-router.put('/:id', controller.atualizar);
+router.put('/:id', verifyJWT, controller.atualizar);
 
 /**
  * @swagger
@@ -182,19 +176,21 @@ router.put('/:id', controller.atualizar);
  *   delete:
  *     summary: Remove um agendamento
  *     tags: [Agendamentos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         schema:
  *           type: string
- *         description: ID do agendamento
+ *         required: true
+ *         description: O ID do agendamento
  *     responses:
- *       204:
+ *       '204':
  *         description: Agendamento removido com sucesso
- *       404:
+ *       '404':
  *         description: Agendamento não encontrado
  */
-router.delete('/:id', controller.remover);
+router.delete('/:id', verifyJWT, controller.remover);
 
 export default router;

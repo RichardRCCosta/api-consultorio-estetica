@@ -1,4 +1,5 @@
 import repo from '../repositories/profissionalRepository.js';
+// Importamos tanto o DTO padrão quanto o de requisição que criamos antes
 import profissionalDto, { profissionalParaRequisicaoDto } from '../dtos/profissionalDto.js';
 
 const profissionalService = {
@@ -9,6 +10,7 @@ const profissionalService = {
     return profissionais.map(profissionalDto);
   },
 
+  
   buscarPorId: async (id) => {
     const profissional = await repo.findById(id);
     // Se o profissional for encontrado, formata com DTO; senão, retorna null
@@ -38,7 +40,7 @@ const profissionalService = {
 
   
   remover: async (id) => {
-    // Apenas repassa a chamada para o repositório, como no exemplo
+    // Apenas repassa a chamada para o repositório
     return await repo.delete(id);
   }
 };

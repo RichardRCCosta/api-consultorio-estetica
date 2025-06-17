@@ -1,5 +1,6 @@
 import express from 'express';
 import controller from '../controllers/pacienteController.js';
+import verifyJWT from '../middlewares/authMiddleware.js'; // 1. Importar o middleware
 
 const router = express.Router();
 
@@ -39,7 +40,7 @@ const router = express.Router();
  *         telefone: "11987654321"
  *         dataNascimento: "1990-01-15"
  *         endereco: "Rua das Flores, 123"
- * 
+ *
  *     PacienteInput:
  *       type: object
  *       required:
@@ -70,6 +71,8 @@ const router = express.Router();
  * tags:
  *   - name: Pacientes
  *     description: API para gerenciamento de pacientes
+ *   - name: Autenticação
+ *     description: Operações de autenticação
  */
 
 /**
@@ -78,6 +81,8 @@ const router = express.Router();
  *   get:
  *     summary: Retorna a lista de todos os pacientes
  *     tags: [Pacientes]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       '200':
  *         description: Lista de pacientes
@@ -88,7 +93,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Paciente'
  */
-router.get('/', controller.listar);
+router.get('/', verifyJWT, controller.listar);
 
 /**
  * @swagger
@@ -96,6 +101,8 @@ router.get('/', controller.listar);
  *   get:
  *     summary: Busca um paciente pelo ID
  *     tags: [Pacientes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -113,7 +120,7 @@ router.get('/', controller.listar);
  *       '404':
  *         description: Paciente não encontrado
  */
-router.get('/:id', controller.buscarPorId);
+router.get('/:id', verifyJWT, controller.buscarPorId);
 
 /**
  * @swagger
@@ -121,6 +128,8 @@ router.get('/:id', controller.buscarPorId);
  *   post:
  *     summary: Cria um novo paciente
  *     tags: [Pacientes]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -137,7 +146,7 @@ router.get('/:id', controller.buscarPorId);
  *       '400':
  *         description: Erro na requisição
  */
-router.post('/', controller.criar);
+router.post('/', verifyJWT, controller.criar);
 
 /**
  * @swagger
@@ -145,6 +154,8 @@ router.post('/', controller.criar);
  *   put:
  *     summary: Atualiza um paciente existente
  *     tags: [Pacientes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -168,7 +179,7 @@ router.post('/', controller.criar);
  *       '404':
  *         description: Paciente não encontrado
  */
-router.put('/:id', controller.atualizar);
+router.put('/:id', verifyJWT, controller.atualizar);
 
 /**
  * @swagger
@@ -176,6 +187,8 @@ router.put('/:id', controller.atualizar);
  *   delete:
  *     summary: Remove um paciente
  *     tags: [Pacientes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -189,6 +202,6 @@ router.put('/:id', controller.atualizar);
  *       '404':
  *         description: Paciente não encontrado
  */
-router.delete('/:id', controller.remover);
+router.delete('/:id', verifyJWT, controller.remover);
 
 export default router;
