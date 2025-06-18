@@ -1,84 +1,159 @@
-## 📌 API - Consultório de Estética
+# 💆‍♀️ API de Consultório de Estética
 
-API RESTful para gerenciamento de um consultório de estética, desenvolvida com Node.js, Express e MongoDB. A aplicação permite o cadastro e controle de pacientes, profissionais, procedimentos e agendamentos.
-
----
-
-### 🚀 Tecnologias Utilizadas
-
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JavaScript
-- Nodemon (para desenvolvimento)
+Uma **API RESTful completa** para gerenciar as operações de um consultório de estética, incluindo o controle de **pacientes**, **profissionais**, **procedimentos** e **agendamentos**.
 
 ---
 
-### 📁 Estrutura do Projeto
+## 📌 Descrição
+
+Este projeto consiste em uma **API robusta e escalável** construída com **Node.js** e **Express.js**, seguindo uma arquitetura **em camadas** (Controllers, Services, Repositories) que garante **organização, legibilidade e manutenção eficiente**.
+
+* 🔐 Autenticação via **JWT**
+* 📄 Documentação interativa com **Swagger**
+* 🧠 Lógica de negócio bem definida com uso de **DTOs**
+
+---
+
+## 🚀 Funcionalidades Principais
+
+* ✅ **CRUD de Pacientes**
+* ✅ **CRUD de Profissionais**
+* ✅ **CRUD de Procedimentos**
+* ✅ **CRUD de Agendamentos** com regras de negócio
+* 🔐 **Login com geração de Token JWT**
+* 📘 **Swagger** para documentação interativa da API
+
+---
+
+## 🧱 Arquitetura do Projeto
 
 ```
-api-consultorio-estetica-main/
-│
-├── server.js                   # Inicialização do servidor
-├── package.json                # Dependências e scripts
-└── src/
-    ├── app.js                  # Configuração do app Express
-    ├── config/
-    │   └── dbConnect.js        # Conexão com o banco MongoDB
-    ├── controllers/            # Lógica dos endpoints
-    ├── dtos/                   # Objetos de transferência de dados
-    ├── models/                 # Modelos do Mongoose
-    ├── repositories/           # Acesso ao banco de dados
-    ├── routes/                 # Definição das rotas
-    └── services/               # Regras de negócio
+📁 src
+├── 📂 controllers     # Recebem requisições e retornam respostas
+├── 📂 services        # Lógica de negócio
+├── 📂 repositories    # Comunicação com o banco de dados
+├── 📂 models          # Schemas do Mongoose
+├── 📂 routes          # Definição de rotas e middlewares
+├── 📂 middlewares     # Funções de autenticação e validações
+└── 📂 dtos            # Objetos de transferência de dados
 ```
 
 ---
 
-### ⚙️ Instalação e Execução
+## 🛠️ Tecnologias Utilizadas
 
-1. **Clone o repositório:**
+* [Node.js](https://nodejs.org/)
+* [Express.js](https://expressjs.com/)
+* [MongoDB](https://www.mongodb.com/)
+* [Mongoose](https://mongoosejs.com/)
+* [JWT](https://jwt.io/)
+* [Swagger](https://swagger.io/)
+* [dotenv](https://github.com/motdotla/dotenv)
+
+---
+
+## ✅ Pré-requisitos
+
+* Node.js `v14+`
+* NPM ou Yarn
+* MongoDB (local ou Atlas)
+
+---
+
+## ⚙️ Instalação e Execução
 
 ```bash
-git clone https://github.com/seu-usuario/api-consultorio-estetica.git
-cd api-consultorio-estetica
-```
+# 1. Clone o repositório
+git clone https://URL-DO-SEU-REPOSITORIO.git
+cd nome-do-diretorio
 
-2. **Instale as dependências:**
-
-```bash
+# 2. Instale as dependências
 npm install
+
+# 3. Configure as variáveis de ambiente
+touch .env
 ```
 
-3. **Configure o banco MongoDB:**
+### 🧾 Exemplo do arquivo `.env`
 
-Altere a string de conexão em `src/config/dbConnect.js` com sua URL MongoDB.
-
-4. **Inicie o servidor:**
+```env
+DB_CONNECTION_STRING=mongodb+srv://<user>:<password>@cluster.mongodb.net/sua-database
+JWT_SECRET=seu-segredo-super-secreto
+```
 
 ```bash
+# 4. Inicie o servidor
 npm start
 ```
 
-O servidor rodará por padrão na porta `3000`.
+A aplicação estará disponível em: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-### 📨 Endpoints Principais
+## 📚 Documentação da API (Swagger)
 
-| Método | Rota                         | Descrição                          |
-|--------|------------------------------|------------------------------------|
-| GET    | `/pacientes`                | Lista todos os pacientes           |
-| POST   | `/pacientes`                | Cadastra um novo paciente          |
-| PUT    | `/pacientes/:id`            | Atualiza um paciente               |
-| DELETE | `/pacientes/:id`            | Remove um paciente                 |
-| GET    | `/profissionais`            | Lista todos os profissionais       |
-| POST   | `/procedimentos`            | Cadastra um procedimento           |
-| POST   | `/agendamentos`             | Cria um novo agendamento           |
+Acesse no navegador:
+
+🔗 [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 
 ---
 
-### 👤 Autor
+## 🌐 Endpoints da API
 
-- **Seu Nome** - [@seu-usuario](https://github.com/seu-usuario)
+### 🔐 Autenticação
+
+| Método | Rota     | Descrição                               | Autenticação |
+| ------ | -------- | --------------------------------------- | ------------ |
+| POST   | `/login` | Realiza o login e retorna um token JWT. | ❌ Pública    |
+
+> 💡 A senha é o **telefone** do profissional.
+
+---
+
+### 👤 Pacientes
+
+| Método | Rota              | Descrição                | Autenticação |
+| ------ | ----------------- | ------------------------ | ------------ |
+| GET    | `/pacientes`      | Lista todos os pacientes | ✅ JWT        |
+| GET    | `/pacientes/{id}` | Busca paciente por ID    | ✅ JWT        |
+| POST   | `/pacientes`      | Cria um novo paciente    | ✅ JWT        |
+| PUT    | `/pacientes/{id}` | Atualiza paciente por ID | ✅ JWT        |
+| DELETE | `/pacientes/{id}` | Remove paciente por ID   | ✅ JWT        |
+
+---
+
+### 👩‍⚕️ Profissionais
+
+| Método | Rota                  | Descrição                    | Autenticação |
+| ------ | --------------------- | ---------------------------- | ------------ |
+| GET    | `/profissionais`      | Lista todos os profissionais | ✅ JWT        |
+| GET    | `/profissionais/{id}` | Busca profissional por ID    | ✅ JWT        |
+| POST   | `/profissionais`      | Cria um novo profissional    | ✅ JWT        |
+| PUT    | `/profissionais/{id}` | Atualiza profissional por ID | ✅ JWT        |
+| DELETE | `/profissionais/{id}` | Remove profissional por ID   | ✅ JWT        |
+
+---
+
+### 💅 Procedimentos
+
+| Método | Rota                  | Descrição                    | Autenticação |
+| ------ | --------------------- | ---------------------------- | ------------ |
+| GET    | `/procedimentos`      | Lista todos os procedimentos | ✅ JWT        |
+| GET    | `/procedimentos/{id}` | Busca procedimento por ID    | ✅ JWT        |
+| POST   | `/procedimentos`      | Cria um novo procedimento    | ✅ JWT        |
+| PUT    | `/procedimentos/{id}` | Atualiza procedimento por ID | ✅ JWT        |
+| DELETE | `/procedimentos/{id}` | Remove procedimento por ID   | ✅ JWT        |
+
+---
+
+### 📅 Agendamentos
+
+| Método | Rota                 | Descrição                   | Autenticação |
+| ------ | -------------------- | --------------------------- | ------------ |
+| GET    | `/agendamentos`      | Lista todos os agendamentos | ✅ JWT        |
+| GET    | `/agendamentos/{id}` | Busca agendamento por ID    | ✅ JWT        |
+| POST   | `/agendamentos`      | Cria um novo agendamento    | ✅ JWT        |
+| PUT    | `/agendamentos/{id}` | Atualiza agendamento por ID | ✅ JWT        |
+| DELETE | `/agendamentos/{id}` | Remove agendamento por ID   | ✅ JWT        |
+
+---
